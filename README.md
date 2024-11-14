@@ -1,7 +1,7 @@
 # GuardBox
 
 ## Descripción  
-GuardBox es un gestor de contraseñas seguro basado en Python. Utiliza encriptación AES y almacenamiento seguro con una clave maestra protegida por hash de bcrypt. Permite generar, almacenar y recuperar contraseñas encriptadas, además de realizar backups y exportar datos.
+GuardBox es un gestor de contraseñas seguro basado en Python para el sistema operativo Windows. Utiliza encriptación AES y almacenamiento seguro con una clave maestra protegida por hash de bcrypt. Permite generar, almacenar y recuperar contraseñas encriptadas, además de realizar backups y exportar datos.
 
 ## Características  
 - Generación y almacenamiento seguro de contraseñas cifradas.
