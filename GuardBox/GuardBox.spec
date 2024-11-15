@@ -35,5 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon=['E:\\IT\\PROGRAMACION\\Practicas con Python\\CryptPass\\proteger32.ico'],
+    icon=['E:\\Repos Git\\GuardBox\\GuardBox\\proteger32.ico'],
 )

@@ -1,5 +1,4 @@
-('E:\\IT\\PROGRAMACION\\Practicas con '
- 'Python\\CryptPass\\build\\GuardBox\\PYZ-00.pyz',
+('E:\\Repos Git\\GuardBox\\GuardBox\\build\\GuardBox\\PYZ-00.pyz',
  [('Crypto',
    'C:\\Users\\Viriato\\AppData\\Roaming\\Python\\Python312\\site-packages\\Crypto\\__init__.py',
    'PYMODULE'),
