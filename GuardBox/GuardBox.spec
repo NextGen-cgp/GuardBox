@@ -2,7 +2,7 @@
 
 
 a = Analysis(
-    ['GuardBox.py'],
+    ['guardbox_launch.py'],
     pathex=[],
     binaries=[],
     datas=[],
