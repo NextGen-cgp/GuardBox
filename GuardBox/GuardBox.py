@@ -22,10 +22,8 @@ class PasswordManager:
         self.RUTA_DB = os.path.join(self.RUTA_BASE, 'guard.db')
         self.RUTA_PASSWORD = os.path.join(self.RUTA_BASE, 'filebox')
         self.AES_BLOCK_SIZE = AES.block_size
-        self.SALT = b'salt'  # En producción, usar un salt único por contraseña
         self.clave_maestra = None  # Clave maestra ingresada por el usuario
         self._initialize_paths()
-        # Ya no llamamos a self._initialize_database() aquí
 
     def _initialize_paths(self):
         """Crea el directorio base si no existe."""
@@ -106,23 +104,30 @@ class PasswordManager:
         return s[:-padding_length]
 
     def cifrar_password(self, password):
-        """Cifra la contraseña utilizando AES y la clave maestra."""
+        """Cifra la contraseña utilizando AES y un salt único."""
         password_con_verificacion = password + "END"
-        clave_derivada = scrypt(self.clave_maestra.encode(), salt=self.SALT, key_len=16, N=2**14, r=8, p=1)
+        salt = get_random_bytes(16)  # Generar un salt aleatorio de 16 bytes
+        clave_derivada = scrypt(self.clave_maestra.encode(), salt=salt, key_len=32, N=2**14, r=8, p=1)
         iv = get_random_bytes(self.AES_BLOCK_SIZE)
         cipher = AES.new(clave_derivada, AES.MODE_CBC, iv)
         password_padded = self._pad(password_con_verificacion)
         encrypted_password = cipher.encrypt(password_padded.encode())
-        return base64.b64encode(iv + encrypted_password).decode()
+        # Concatenar salt + iv + encrypted_password
+        encrypted_data = salt + iv + encrypted_password
+        # Retornar el dato cifrado en base64 para almacenarlo
+        return base64.b64encode(encrypted_data).decode()
 
     def descifrar_password(self, encrypted_password):
-        """Descifra la contraseña encriptada utilizando AES y la clave maestra."""
+        """Descifra la contraseña encriptada utilizando AES y el salt almacenado."""
         try:
-            clave_derivada = scrypt(self.clave_maestra.encode(), salt=self.SALT, key_len=16, N=2**14, r=8, p=1)
             encrypted_data = base64.b64decode(encrypted_password)
-            iv = encrypted_data[:self.AES_BLOCK_SIZE]
+            # Extraer salt, iv y el texto cifrado
+            salt = encrypted_data[:16]
+            iv = encrypted_data[16:16 + self.AES_BLOCK_SIZE]
+            encrypted_password_bytes = encrypted_data[16 + self.AES_BLOCK_SIZE:]
+            clave_derivada = scrypt(self.clave_maestra.encode(), salt=salt, key_len=32, N=2**14, r=8, p=1)
             cipher = AES.new(clave_derivada, AES.MODE_CBC, iv)
-            decrypted_padded = cipher.decrypt(encrypted_data[self.AES_BLOCK_SIZE:]).decode()
+            decrypted_padded = cipher.decrypt(encrypted_password_bytes).decode()
             decrypted_password = self._unpad(decrypted_padded)
             if decrypted_password.endswith("END"):
                 return decrypted_password[:-3]
